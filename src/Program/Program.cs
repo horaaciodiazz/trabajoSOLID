@@ -1,13 +1,7 @@
-﻿//-------------------------------------------------------------------------
-// <copyright file="Program.cs" company="Universidad Católica del Uruguay">
-// Copyright (c) Programación II. Derechos reservados.
-// </copyright>
-//-------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Linq;
-using Full_GRASP_And_SOLID.Library;
+using Full_GRASP_And_SOLID.Library; // Assuming Recipe, Product, Equipment are here
 
 namespace Full_GRASP_And_SOLID
 {
@@ -23,12 +17,18 @@ namespace Full_GRASP_And_SOLID
 
             Recipe recipe = new Recipe();
             recipe.FinalProduct = GetProduct("Café con leche");
-            recipe.AddStep(new Step(GetProduct("Café"), 100, GetEquipment("Cafetera"), 120));
-            recipe.AddStep(new Step(GetProduct("Leche"), 200, GetEquipment("Hervidor"), 60));
+            
+            // La responsabilidad de crear el Step ahora es de la Recipe
+            recipe.AddStep(GetProduct("Café"), 100, GetEquipment("Cafetera"), 120);
+            recipe.AddStep(GetProduct("Leche"), 200, GetEquipment("Hervidor"), 60);
 
-            AllInOnePrinter printer = new AllInOnePrinter();
-            printer.PrintRecipe(recipe, Destination.Console);
-            printer.PrintRecipe(recipe, Destination.File);
+            // 🛠️ CORRECTED PRINTING: Use the Print method of IPrinter,
+            // passing it the string returned by recipe.GetTextToPrint().
+            IPrinter consolePrinter = new ConsolePrinter();
+            consolePrinter.Print(recipe.GetTextToPrint());
+
+            IPrinter filePrinter = new FilePrinter();
+            filePrinter.Print(recipe.GetTextToPrint());
         }
 
         private static void PopulateCatalogs()
